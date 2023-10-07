@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">TicketingApp</string>
+    <string name="mail">Email</string>
+    <string name="login">Login</string>
+    <string name="password">Password</string>
+    <string name="name">Name</string>
+    <string name="nic">NIC</string>
+    <string name="phone">Phone number</string>
+    <string name="date">Date</string>
+    <string name="register">Register</string>
+    <string name="reserve">Reserve</string>
+</resources>
