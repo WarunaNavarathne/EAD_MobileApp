@@ -9,4 +9,5 @@
     <string name="date">Date</string>
     <string name="register">Register</string>
     <string name="reserve">Reserve</string>
+    <string name="update">Update Account</string>
 </resources>
