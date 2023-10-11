@@ -2,7 +2,9 @@ package com.example.ticketingapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,7 +17,6 @@ import retrofit2.Retrofit;
 import retrofit2.Callback;
 import retrofit2.converter.gson.GsonConverterFactory;
 import android.widget.Toast;
-
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -52,6 +53,7 @@ public class RegisterActivity extends AppCompatActivity {
                 String email = emailEditText.getText().toString();
                 String phone = phoneEditText.getText().toString();
                 String password = passwordEditText.getText().toString();
+                String date = "";
 
                 // Create a Traveler object
                 Traveler traveler = new Traveler();
@@ -60,6 +62,7 @@ public class RegisterActivity extends AppCompatActivity {
                 traveler.setEmail(email);
                 traveler.setPhone(phone);
                 traveler.setPassword(password);
+                traveler.setDate(date);
 
                 // Make the API call using Retrofit
                 Retrofit retrofit = new Retrofit.Builder()
@@ -74,10 +77,13 @@ public class RegisterActivity extends AppCompatActivity {
                 call.enqueue(new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
+                        Log.d("Response Code", String.valueOf(response.code()));
+                        Log.d("Response Message", response.message());
                         if (response.isSuccessful()) {
                             // Registration successful
                             showToast("Registration is complete!");
-
+                            Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+                            startActivity(intent);
                         } else {
                             // Registration failed
                             showToast("Registration is Failed!");

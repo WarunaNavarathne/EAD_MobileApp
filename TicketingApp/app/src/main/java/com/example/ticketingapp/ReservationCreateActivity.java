@@ -1,17 +1,27 @@
 package com.example.ticketingapp;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TextView;
+import androidx.annotation.Nullable;
 import android.widget.Toast;
 
 import com.example.ticketingapp.models.Reservation;
+import com.example.ticketingapp.models.RouteInfo;
 import com.google.android.material.textfield.TextInputLayout;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,101 +34,75 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ReservationCreateActivity extends AppCompatActivity {
-    private ApiService apiService;
-    private AutoCompleteTextView routeDropdown;
-    private List<Route> routeList = new ArrayList<>();
-    private EditText nameEditText;
-    private EditText nicEditText;
-    private EditText phoneEditText;
-    private EditText dateEditText;
-    private Button reserveButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reservation_create);
-        View decorView = getWindow().getDecorView();
-        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN;
-        decorView.setSystemUiVisibility(uiOptions);
 
-        // Initialize Retrofit with your base URL
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://eadpvtltd.azurewebsites.net/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+        // Simulated JSON response data
+        String jsonResponse = "{\"isSuccess\": true, \"message\": \"Data Fetch Successfully\", \"data\": [{\"id\": \"652416775c17263f03e5763a\",\"generateID\": \"2724\",\"startPlace\": \"Colombo\",\"destination\": \"Kandy\",\"startTime\": \"12:00\",\"arriveTime\": \"1:00\",\"price\": \"100\",\"noOfSeats\": 10}]}";
 
-        // Create an instance of your ApiService interface
-        apiService = retrofit.create(ApiService.class);
+        try {
+            JSONObject response = new JSONObject(jsonResponse);
+            JSONArray dataArray = response.getJSONArray("data");
 
-        // Initialize UI components
-        routeDropdown = findViewById(R.id.dropdownField);
-        nameEditText = findViewById(R.id.nameReservation);
-        nicEditText = findViewById(R.id.nicReservation);
-        phoneEditText = findViewById(R.id.phoneReservation);
-        dateEditText = findViewById(R.id.dateReservation);
-        reserveButton = findViewById(R.id.reserveButton);
+            List<RouteInfo> routeInfoList = new ArrayList<>();
 
-        Call<List<Route>> call = apiService.getAllRoutes();
-        call.enqueue(new Callback<List<Route>>() {
-            @Override
-            public void onResponse(Call<List<Route>> call, Response<List<Route>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    routeList = response.body();
+            for (int i = 0; i < dataArray.length(); i++) {
+                JSONObject item = dataArray.getJSONObject(i);
+                String startTime = item.getString("startTime");
+                String arriveTime = item.getString("arriveTime");
+                String startPlace = item.getString("startPlace");
+                String destination = item.getString("destination");
+                String price = item.getString("price");
 
-                    // Populate the dropdown with route names
-                    ArrayAdapter<Route> adapter = new ArrayAdapter<>(ReservationCreateActivity.this,
-                            android.R.layout.simple_dropdown_item_1line, routeList);
-                    routeDropdown.setAdapter(adapter);
-                } else {
-                    // Handle API error
-                    Toast.makeText(ReservationCreateActivity.this, "Failed to fetch routes.", Toast.LENGTH_SHORT).show();
-                }
+                RouteInfo routeInfo = new RouteInfo(startTime, arriveTime, startPlace, destination, price);
+                routeInfoList.add(routeInfo);
             }
 
-            @Override
-            public void onFailure(Call<List<Route>> call, Throwable t) {
-                // Handle API call failure
-                Toast.makeText(ReservationCreateActivity.this, "API call failed.", Toast.LENGTH_SHORT).show();
+            // Create the Spinner and set a custom adapter
+            Spinner routeSpinner = findViewById(R.id.routeSpinner);
+            CustomSpinnerAdapter spinnerAdapter = new CustomSpinnerAdapter(routeInfoList);
+            routeSpinner.setAdapter(spinnerAdapter);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private class CustomSpinnerAdapter extends ArrayAdapter<RouteInfo> {
+        private List<RouteInfo> items;
+
+        public CustomSpinnerAdapter(List<RouteInfo> items) {
+            super(ReservationCreateActivity.this, R.layout.spinner_item, items);
+            this.items = items;
+        }
+
+        @Override
+        public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+            return getCustomView(position, convertView, parent);
+        }
+
+        @NonNull
+        @Override
+        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+            return getCustomView(position, convertView, parent);
+        }
+
+        public View getCustomView(int position, View convertView, ViewGroup parent) {
+            View view = convertView;
+            if (view == null) {
+                view = getLayoutInflater().inflate(R.layout.spinner_item, parent, false);
             }
-        });
 
-        reserveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Get user input
-                String selectedRoute = routeDropdown.getText().toString();
-                String name = nameEditText.getText().toString();
-                String nic = nicEditText.getText().toString();
-                String phone = phoneEditText.getText().toString();
-                String date = dateEditText.getText().toString();
-
-                // Create a Reservation object
-                Reservation reservation = new Reservation(selectedRoute, name, nic, phone, date);
-
-                // Call the API to create a reservation
-                Call<Void> reservationCall = apiService.createReservation(reservation);
-                reservationCall.enqueue(new Callback<Void>() {
-                    @Override
-                    public void onResponse(Call<Void> call, Response<Void> response) {
-                        if (response.isSuccessful()) {
-                            // Reservation successful
-                            Toast.makeText(ReservationCreateActivity.this, "Reservation successful!", Toast.LENGTH_SHORT).show();
-                            finish(); // Finish this activity (optional)
-                        } else {
-                            // Reservation failed
-                            Toast.makeText(ReservationCreateActivity.this, "Reservation failed. Please try again.", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<Void> call, Throwable t) {
-                        // Handle API call failure
-                        Toast.makeText(ReservationCreateActivity.this, "API call failed.", Toast.LENGTH_SHORT).show();
-                    }
-                });
+            RouteInfo item = items.get(position);
+            if (item != null) {
+                TextView textView = view.findViewById(android.R.id.text1);
+                textView.setText(item.getFormattedText());
             }
-        });
 
-
+            return view;
+        }
     }
 }

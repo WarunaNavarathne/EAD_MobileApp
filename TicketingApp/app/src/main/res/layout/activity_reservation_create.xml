@@ -57,22 +57,14 @@
                     />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:hint="Select Route"
-                style="@style/CustomExposedDropdown"
-                app:hintTextColor="@color/green"
-                android:id="@+id/route_dropdown">
 
-                <AutoCompleteTextView
-                    android:id="@+id/dropdownField"
+            <Spinner
+                    android:id="@+id/routeSpinner"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="none" />
+                    android:layout_height="50dp"
+                    android:layout_marginBottom="5dp"
+                    android:background="@drawable/custom_spinner_border"/>
 
-            </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"

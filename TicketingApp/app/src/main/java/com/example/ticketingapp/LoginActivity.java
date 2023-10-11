@@ -4,10 +4,16 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.example.ticketingapp.models.LoginRequest;
+import com.example.ticketingapp.models.Traveler;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -45,28 +51,41 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Retrieve user input
-                String email = emailEditText.getText().toString();
+                String mail = emailEditText.getText().toString();
                 String password = passwordEditText.getText().toString();
 
-                // Make the API call
-                Call<Void> call = apiService.loginTraveler(email, password);
-                call.enqueue(new Callback<Void>() {
+                // Create a LoginRequest object
+                LoginRequest loginRequest = new LoginRequest(mail, password);
+
+                // Make the API call with the LoginRequest object as the request body
+                Call<List<Traveler>> call = apiService.loginTraveler(loginRequest);
+                call.enqueue(new Callback<List<Traveler>>() {
                     @Override
-                    public void onResponse(Call<Void> call, Response<Void> response) {
+                    public void onResponse(Call<List<Traveler>> call, Response<List<Traveler>> response) {
+                        Log.d("Response Code", String.valueOf(response.code()));
+                        Log.d("Response Message", response.message());
                         if (response.isSuccessful()) {
-                            // Login successful
-                            showToast("Login successful!");
-                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                            startActivity(intent);
+                            List<Traveler> travelers = response.body();
+                            if (travelers != null && !travelers.isEmpty()) {
+                                // Handle the list of Traveler objects (e.g., take the first one)
+                                Traveler traveler = travelers.get(0);
+                                showToast("Login successful!");
+                                // Pass user data to the main activity or save it in shared preferences
+                                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                                startActivity(intent);
+                            } else {
+                                // Handle the case where the response is successful but the list is empty
+                                showToast("Login failed. Please check your credentials.");
+                            }
                         } else {
-                            // Login failed
-                            showToast("Login failed. Please check your credentials.");
+                            // Handle the case where the response is not successful
+                            showToast("Response is not successful");
                         }
                     }
 
                     @Override
-                    public void onFailure(Call<Void> call, Throwable t) {
-                        // API call failed
+                    public void onFailure(Call<List<Traveler>> call, Throwable t) {
+                        // Handle the case where the API call failed
                         showToast("Login failed due to an error. Please try again later.");
                     }
                 });

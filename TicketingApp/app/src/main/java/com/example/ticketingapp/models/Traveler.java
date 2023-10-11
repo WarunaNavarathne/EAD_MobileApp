@@ -6,7 +6,7 @@ public class Traveler {
     private String Name;
     private String Mail;
     private String PhoneNo;
-    private String JoinDate; // You can set this automatically on the server-side
+    private String JoinDate;
     private String Password;
     private String IsActive;
 
@@ -34,6 +34,8 @@ public class Traveler {
     public void setPassword(String password) {
         this.Password = password;
     }
+
+
 
     // Getter methods
     public String getName() {

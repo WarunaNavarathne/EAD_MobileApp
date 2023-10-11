@@ -1,4 +1,5 @@
 package com.example.ticketingapp;
+import com.example.ticketingapp.models.LoginRequest;
 import com.example.ticketingapp.models.Reservation;
 import com.example.ticketingapp.models.Traveler;
 import com.example.ticketingapp.models.UserProfile;
@@ -10,6 +11,8 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.Headers;
+import retrofit2.http.Query;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
@@ -20,13 +23,11 @@ public interface ApiService {
     Call<Void> createTraveler(@Body Traveler traveler);
 
     @POST("api/Login/TravellerLogin")
-    Call<Void> loginTraveler(
-            @Field("email") String email,
-            @Field("password") String password
-    );
+    @Headers("Content-Type: application/json")
+    Call<List<Traveler>> loginTraveler(@Body LoginRequest loginRequest);
 
     @GET("api/Train/GetAll")
-    Call<List<Route>> getAllRoutes();
+    Call<ApiResponse<List<Route>>> getAllRoutes();
 
     @POST("api/Ticket/Create")
     Call<Void> createReservation(@Body Reservation reservation);
@@ -38,6 +39,4 @@ public interface ApiService {
     // Update user profile by NIC
     @PUT("api/Traveller/UpdateByNIC/{nic}")
     Call<Void> updateUserProfileByNIC(@Path("nic") String nic, @Body UserProfile userProfile);
-
-
 }
