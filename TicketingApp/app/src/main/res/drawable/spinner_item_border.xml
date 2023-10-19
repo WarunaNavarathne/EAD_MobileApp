@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--Custom styles for the spinner-->
+<!--spinner item style-->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape android:shape="rectangle">
-            <solid android:color="@android:color/white" />
-            <stroke android:width="1dp" android:color="#9e9b9b" />
+            <solid android:color="#FFFFFF" /> <!-- Background color -->
+            <stroke android:width="1dp" android:color="#000000" /> <!-- Border color and width -->
         </shape>
     </item>
 </layer-list>

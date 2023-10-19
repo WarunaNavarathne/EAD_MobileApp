@@ -27,6 +27,7 @@ public class UserProfileActivity extends AppCompatActivity {
     private Button updateButton;
     private Button activateDeactivateButton;
 
+    // This class represents the user profile activity of the Ticketing App
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,8 +52,10 @@ public class UserProfileActivity extends AppCompatActivity {
         updateButton = findViewById(R.id.updateButton);
         activateDeactivateButton = findViewById(R.id.btnActivateDeactivate);
 
+        // Fetch and display user data
         fetchUserData();
 
+        // Set a click listener for the "Update" button
         updateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -18,6 +18,7 @@ import retrofit2.Callback;
 import retrofit2.converter.gson.GsonConverterFactory;
 import android.widget.Toast;
 
+// This class represents the user registration activity of the Ticketing App
 public class RegisterActivity extends AppCompatActivity {
 
     private EditText nameEditText, nicEditText, emailEditText, phoneEditText, passwordEditText;
@@ -44,6 +45,8 @@ public class RegisterActivity extends AppCompatActivity {
         passwordEditText = findViewById(R.id.passwordRegister);
         registerButton = findViewById(R.id.loginButton);
 
+
+        // Set a click listener for the registration button
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -74,6 +77,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                 Call<Void> call = apiService.createTraveler(traveler);
 
+                // Handle the API response
                 call.enqueue(new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {

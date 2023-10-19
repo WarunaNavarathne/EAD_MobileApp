@@ -1,36 +1,58 @@
 package com.example.ticketingapp.models;
 
 public class Reservation {
-    private String train;
-    private String name;
-    private String NIC;
-    private String phoneNo;
-    private String reservationDate;
 
-    public Reservation(String train, String name, String NIC, String phoneNo, String reservationDate) {
-        this.train = train;
-        this.name = name;
-        this.NIC = NIC;
-        this.phoneNo = phoneNo;
-        this.reservationDate = reservationDate;
+    private String GenerateID;
+    private String Train;
+    private String Name;
+    private String NIC;
+    private String PhoneNo;
+    private String ReservationDate;
+    private String SeatNumber;
+
+    public String getGenerateID() {
+        return GenerateID;
     }
+
+    public void setGenerateID(String generateID) {
+        GenerateID = generateID;
+    }
+
+    private String CreateDate;
+
+    public String getCreateDate() {
+        return CreateDate;
+    }
+
+    public void setCreateDate(String createDate) {
+        CreateDate = createDate;
+    }
+
+    public String getSeatNumber() {
+        return SeatNumber;
+    }
+
+    public void setSeatNumber(String seatNumber) {
+        this.SeatNumber = seatNumber;
+    }
+
 
     // Getter and Setter for train
     public String getTrain() {
-        return train;
+        return Train;
     }
 
-    public void setTrain(String train) {
-        this.train = train;
+    public void setTrain(String Train) {
+        this.Train = Train;
     }
 
     // Getter and Setter for name
     public String getName() {
-        return name;
+        return Name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String Name) {
+        this.Name = Name;
     }
 
     // Getter and Setter for NIC
@@ -44,19 +66,31 @@ public class Reservation {
 
     // Getter and Setter for phoneNo
     public String getPhoneNo() {
-        return phoneNo;
+        return PhoneNo;
     }
 
-    public void setPhoneNo(String phoneNo) {
-        this.phoneNo = phoneNo;
+    public void setPhoneNo(String PhoneNo) {
+        this.PhoneNo = PhoneNo;
     }
 
     // Getter and Setter for reservationDate
     public String getReservationDate() {
-        return reservationDate;
+        return ReservationDate;
     }
 
-    public void setReservationDate(String reservationDate) {
-        this.reservationDate = reservationDate;
+    public void setReservationDate(String ReservationDate) {
+        this.ReservationDate = ReservationDate;
+    }
+
+    @Override
+    public String toString() {
+        return "Reservation{" +
+                "route='" + Train + '\'' +
+                ", name='" + Name + '\'' +
+                ", nic='" + NIC + '\'' +
+                ", phone='" + PhoneNo + '\'' +
+                ", date='" + ReservationDate + '\'' +
+                ", seat='" + SeatNumber + '\'' +
+                '}';
     }
 }

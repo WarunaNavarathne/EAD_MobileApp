@@ -1,4 +1,5 @@
 plugins {
+    // Apply the Android application plugin for building Android apps.
     id 'com.android.application'
 }
 
@@ -6,6 +7,7 @@ android {
     namespace 'com.example.ticketingapp'
     compileSdk 33
 
+    // Configure the Android project settings.
     defaultConfig {
         applicationId "com.example.ticketingapp"
         minSdk 24
@@ -13,6 +15,7 @@ android {
         versionCode 1
         versionName "1.0"
 
+        // Specify the runner for Android instrumentation tests.
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -31,8 +34,8 @@ android {
     }
 }
 
+// Declare project dependencies.
 dependencies {
-
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.8.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
