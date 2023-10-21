@@ -35,7 +35,7 @@ public class Traveler {
         this.Password = password;
     }
 
-
+    public void setIsActive(String isActive) { this.IsActive = isActive; }
 
     // Getter methods
     public String getName() {
@@ -61,4 +61,9 @@ public class Traveler {
     public String getPassword() {
         return Password;
     }
+
+    public String getIsActive() {
+        return IsActive;
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.example.ticketingapp;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -8,6 +9,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
+import android.app.DatePickerDialog;
+import android.widget.DatePicker;
+import android.content.SharedPreferences;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Calendar;
 
 import retrofit2.Callback;
 import retrofit2.Call;
@@ -39,11 +44,18 @@ public class ReservationCreateActivity extends AppCompatActivity {
 
         Spinner routeSpinner = findViewById(R.id.routeSpinner);
         EditText nameEditText = findViewById(R.id.nameReservation);
-        EditText nicEditText = findViewById(R.id.nicReservation);
+//        EditText nicEditText = findViewById(R.id.nicReservation);
         EditText phoneEditText = findViewById(R.id.phoneReservation);
         EditText dateEditText = findViewById(R.id.dateReservation);
         EditText seatEditText = findViewById(R.id.seatReservation);
 
+        // Add a click listener to show the DatePickerDialog when the EditText is clicked
+        dateEditText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDatePickerDialog(dateEditText);
+            }
+        });
 
         // Initialize Retrofit
         Retrofit retrofit = new Retrofit.Builder()
@@ -99,11 +111,15 @@ public class ReservationCreateActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // Get the selected route from the Spinner
                 String train = routeSpinner.getSelectedItem().toString();
+
                 String name = nameEditText.getText().toString();
-                String nic = nicEditText.getText().toString();
+//                String nic = nicEditText.getText().toString();
                 String phone = phoneEditText.getText().toString();
                 String reservationDate = dateEditText.getText().toString();
                 String SeatNumber = seatEditText.getText().toString();
+
+                SharedPreferences sharedPreferences = getSharedPreferences("UserPreferences", Context.MODE_PRIVATE);
+                String nic = sharedPreferences.getString("nic", "default_value_if_not_found");
 
                 // Implement reservation creation logic here
                 Log.d("TAG", "Creating reservation with route: " + train);
@@ -112,6 +128,36 @@ public class ReservationCreateActivity extends AppCompatActivity {
         });
 
     }
+
+    private void showDatePickerDialog(final EditText dateEditText) {
+        // Get the current date and set it as the default date in the DatePickerDialog
+        final Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        // Calculate the maximum date (30 days from the current date)
+        Calendar maxDate = Calendar.getInstance();
+        maxDate.add(Calendar.DAY_OF_MONTH, 30);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(ReservationCreateActivity.this, new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                // Update the date in the EditText when a date is selected in the DatePickerDialog
+                String selectedDate = year + "-" + (monthOfYear + 1) + "-" + dayOfMonth;
+                dateEditText.setText(selectedDate);
+            }
+        }, year, month, day);
+
+        // Set the maximum and minimum date values
+        datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+        datePickerDialog.getDatePicker().setMaxDate(maxDate.getTimeInMillis());
+
+        // Show the DatePickerDialog
+        datePickerDialog.show();
+    }
+
+
 
     // Helper method to create a reservation
     private void createReservation(String route, String name, String nic, String phone, String date, String seat) {

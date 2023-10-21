@@ -4,39 +4,54 @@ import com.google.gson.annotations.SerializedName;
 
 public class UserProfile {
 
+    @SerializedName("Id")
+    private String Id;
     @SerializedName("Name")
-    private String name;
+    private String Name;
 
     @SerializedName("NIC")
     private String NIC;
 
     @SerializedName("Mail")
-    private String mail;
+    private String Mail;
 
-    @SerializedName("Phone")
-    private String phone;
+    @SerializedName("PhoneNo")
+    private String PhoneNo;
 
-    @SerializedName("Date")
-    private String date;
+    @SerializedName("Password")
+    private String Password;
 
-    public UserProfile() {
-        // Default constructor
+    @SerializedName("JoinDate")
+    private String JoinDate;
+
+    @SerializedName("IsActive")
+    private boolean IsActive;
+
+    public UserProfile(String id, String name, String NIC, String mail, String phoneNo, String password, String joinDate, boolean isActive) {
+        Id = id;
+        Name = name;
+        this.NIC = NIC;
+        Mail = mail;
+        PhoneNo = phoneNo;
+        Password = password;
+        JoinDate = joinDate;
+        IsActive = isActive;
     }
 
-    public UserProfile(String name, String NIC, String mail, String phone, String date) {
-        this.name = name;
-        this.NIC = NIC;
-        this.mail = mail;
-        this.phone = phone;
-        this.date = date;
+    public String getId() {
+        return Id;
+    }
+
+    public void setId(String id) {
+        Id = id;
     }
 
     public String getName() {
-        return name;
+        return Name;
     }
 
     public void setName(String name) {
-        this.name = name;
+        Name = name;
     }
 
     public String getNIC() {
@@ -48,26 +63,42 @@ public class UserProfile {
     }
 
     public String getMail() {
-        return mail;
+        return Mail;
     }
 
     public void setMail(String mail) {
-        this.mail = mail;
+        Mail = mail;
     }
 
-    public String getPhone() {
-        return phone;
+    public String getPhoneNo() {
+        return PhoneNo;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setPhoneNo(String phoneNo) {
+        PhoneNo = phoneNo;
     }
 
-    public String getDate() {
-        return date;
+    public String getPassword() {
+        return Password;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setPassword(String password) {
+        Password = password;
+    }
+
+    public String getJoinDate() {
+        return JoinDate;
+    }
+
+    public void setJoinDate(String joinDate) {
+        JoinDate = joinDate;
+    }
+
+    public boolean getIsActive() {
+        return IsActive;
+    }
+
+    public void setIsActive(boolean isActive) {
+        IsActive = isActive;
     }
 }

@@ -18,13 +18,13 @@
         <activity
             android:name=".UserProfileActivity"
             android:exported="false">
-
         </activity>
         <activity
             android:name=".ReservationCreateActivity"
             android:exported="false">
 
         </activity>
+
         <activity
             android:name=".RegisterActivity"
             android:exported="false">
@@ -38,7 +38,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
 
 

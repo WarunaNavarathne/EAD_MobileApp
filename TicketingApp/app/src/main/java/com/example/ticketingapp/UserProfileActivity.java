@@ -2,13 +2,20 @@ package com.example.ticketingapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.ticketingapp.models.Traveler;
 import com.example.ticketingapp.models.UserProfile;
+import com.google.gson.Gson;
+
+import java.io.IOException;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -17,17 +24,17 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class UserProfileActivity extends AppCompatActivity {
-
+    private UserResponse fetchedUserResponse;
     private ApiService apiService;
     private EditText nameEditText;
     private EditText nicEditText;
     private EditText mailEditText;
     private EditText phoneEditText;
     private EditText dateEditText;
+    private EditText passwordEditText;  // Define passwordEditText
+    private EditText isactiveEditText;  // Define isactiveEditText
     private Button updateButton;
-    private Button activateDeactivateButton;
 
-    // This class represents the user profile activity of the Ticketing App
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,9 +43,8 @@ public class UserProfileActivity extends AppCompatActivity {
         decorView.setSystemUiVisibility(uiOptions);
         setContentView(R.layout.activity_user_profile);
 
-        // Make the API call using Retrofit
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://eadpvtltd.azurewebsites.net/")
+                .baseUrl("https://eadpvtltd.azurewebsites.net/") // Replace with your actual base URL
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
@@ -49,8 +55,9 @@ public class UserProfileActivity extends AppCompatActivity {
         mailEditText = findViewById(R.id.mailProfile);
         phoneEditText = findViewById(R.id.phoneProfile);
         dateEditText = findViewById(R.id.dateProfile);
+//        passwordEditText = findViewById(R.id.passwordProfile);  // Initialize passwordEditText
+//        isactiveEditText = findViewById(R.id.isActiveProfile);  // Initialize isactiveEditText
         updateButton = findViewById(R.id.updateButton);
-        activateDeactivateButton = findViewById(R.id.btnActivateDeactivate);
 
         // Fetch and display user data
         fetchUserData();
@@ -63,72 +70,96 @@ public class UserProfileActivity extends AppCompatActivity {
                 updateUserData();
             }
         });
-
-
     }
 
-    // Fetch user data and populate UI fields
     private void fetchUserData() {
-        // Make an API call to get user data by NIC
-        Call<UserProfile> call = apiService.getUserProfileByNIC("user_nic"); // Replace with the actual NIC
-        call.enqueue(new Callback<UserProfile>() {
+        SharedPreferences sharedPreferences = getSharedPreferences("UserPreferences", Context.MODE_PRIVATE);
+        String nic = sharedPreferences.getString("nic", "default_value_if_not_found");
+
+        Call<UserResponse> call = apiService.getUserProfileByNIC(nic);
+        call.enqueue(new Callback<UserResponse>() {
             @Override
-            public void onResponse(Call<UserProfile> call, Response<UserProfile> response) {
+            public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    UserProfile userProfile = response.body();
-                    // Populate the UI fields with user data
-                    nameEditText.setText(userProfile.getName());
-                    nicEditText.setText(userProfile.getNIC());
-                    mailEditText.setText(userProfile.getMail());
-                    phoneEditText.setText(userProfile.getPhone());
-                    dateEditText.setText(userProfile.getDate());
+                    fetchedUserResponse = response.body();
+                    updateUIWithUserData(fetchedUserResponse);
                 } else {
-                    // Handle API error
-                    Toast.makeText(UserProfileActivity.this, "Failed to fetch user data.", Toast.LENGTH_SHORT).show();
+                    handleApiError(response);
                 }
             }
 
             @Override
-            public void onFailure(Call<UserProfile> call, Throwable t) {
-                // Handle API call failure
+            public void onFailure(Call<UserResponse> call, Throwable t) {
+                Log.e("API Call Error", t.getMessage());
                 Toast.makeText(UserProfileActivity.this, "API call failed.", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    // Update user data
+    private void updateUIWithUserData(UserResponse userProfile) {
+        if (userProfile != null) {
+            nameEditText.setText(userProfile.getData().getName());
+            nicEditText.setText(userProfile.getData().getNic());
+            mailEditText.setText(userProfile.getData().getMail());
+            phoneEditText.setText(userProfile.getData().getPhoneNo());
+            dateEditText.setText(userProfile.getData().getJoinDate());
+//            passwordEditText.setText(userProfile.getData().getPassword());
+//            isactiveEditText.setText(userProfile.getData().isActive());
+        } else {
+            Log.d("UserProfile", "Response body is null.");
+        }
+    }
+
     private void updateUserData() {
-        // Get updated user data from UI fields
-        String updatedName = nameEditText.getText().toString();
-        String updatedNIC = nicEditText.getText().toString();
-        String updatedMail = mailEditText.getText().toString();
-        String updatedPhone = phoneEditText.getText().toString();
-        String updatedDate = dateEditText.getText().toString();
+        if (fetchedUserResponse != null) {
+            String updatedId = fetchedUserResponse.getData().getId();
+            String updatedPassword = fetchedUserResponse.getData().getPassword();
+            boolean updatedIsActive = fetchedUserResponse.getData().isActive();
+            Log.d("UserProfile", updatedId);
+            Log.d("UserProfile", updatedPassword);
+            Log.d("UserProfile", String.valueOf(updatedIsActive));
 
-        // Create a UserProfile object with updated data
-        UserProfile updatedProfile = new UserProfile(updatedName, updatedNIC, updatedMail, updatedPhone, updatedDate);
+            // Get updated data from UI fields
+            String updatedName = nameEditText.getText().toString();
+            String updatedNIC = nicEditText.getText().toString();
+            String updatedMail = mailEditText.getText().toString();
+            String updatedPhoneNo = phoneEditText.getText().toString();
+            String updatedJoinDate = dateEditText.getText().toString();
 
-        // Make an API call to update user data
-        Call<Void> call = apiService.updateUserProfileByNIC(updatedNIC, updatedProfile);
-        call.enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                if (response.isSuccessful()) {
-                    // User data updated successfully
-                    Toast.makeText(UserProfileActivity.this, "User data updated.", Toast.LENGTH_SHORT).show();
-                } else {
-                    // Handle API error
-                    Toast.makeText(UserProfileActivity.this, "Failed to update user data.", Toast.LENGTH_SHORT).show();
+            // Create a UserProfile object with updated data
+            UserProfile updatedProfile = new UserProfile(updatedId, updatedName, updatedNIC, updatedMail, updatedPhoneNo, updatedPassword, updatedJoinDate, updatedIsActive);
+
+            Call<UserResponse> call = apiService.updateUserProfileByNIC(updatedProfile);
+            call.enqueue(new Callback<UserResponse>() {
+                @Override
+                public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        UserResponse updatedUserResponse = response.body();
+                        Toast.makeText(UserProfileActivity.this, "User data updated.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        handleApiError(response);
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                // Handle API call failure
-                Toast.makeText(UserProfileActivity.this, "API call failed.", Toast.LENGTH_SHORT).show();
-            }
-        });
+                @Override
+                public void onFailure(Call<UserResponse> call, Throwable t) {
+                    Log.e("API Call Error", t.getMessage());
+                    Toast.makeText(UserProfileActivity.this, "API call failed.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            Toast.makeText(UserProfileActivity.this, "No user data has been fetched.", Toast.LENGTH_SHORT).show();
+        }
     }
 
-
+    private void handleApiError(Response<UserResponse> response) {
+        if (response != null && response.errorBody() != null) {
+            try {
+                Log.e("API Error", response.errorBody().string());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        Toast.makeText(UserProfileActivity.this, "API call failed.", Toast.LENGTH_SHORT).show();
+    }
 }

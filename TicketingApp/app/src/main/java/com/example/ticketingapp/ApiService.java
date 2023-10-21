@@ -13,6 +13,7 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 // This interface defines the API endpoints for the Ticketing App
 public interface ApiService {
@@ -23,7 +24,7 @@ public interface ApiService {
     // Login a traveler using a POST request with a LoginRequest
     @POST("api/Login/TravellerLogin")
     @Headers("Content-Type: application/json")
-    Call<List<Traveler>> loginTraveler(@Body LoginRequest loginRequest);
+    Call<List<LoginResponse>> loginTraveler(@Body LoginRequest loginRequest);
 
     // Get a list of all train routes using a GET request
     @GET("api/Train/GetAll")
@@ -34,10 +35,9 @@ public interface ApiService {
     Call<MyApiResponse> createReservation(@Body Reservation reservation);
 
     // Get user profile by NIC
-    @GET("api/Traveller/GetByNIC/{nic}")
-    Call<UserProfile> getUserProfileByNIC(@Path("nic") String nic);
+    @GET("api/Traveller/GetByNIC")
+    Call<UserResponse> getUserProfileByNIC(@Query("nic") String nic);
 
-    // Update user profile by NIC
-    @PUT("api/Traveller/UpdateByNIC/{nic}")
-    Call<Void> updateUserProfileByNIC(@Path("nic") String nic, @Body UserProfile userProfile);
+    @PUT("api/Traveller/UpdateByNIC")
+    Call<UserResponse> updateUserProfileByNIC(@Body UserProfile userProfile);
 }

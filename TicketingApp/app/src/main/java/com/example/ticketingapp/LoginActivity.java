@@ -2,13 +2,16 @@ package com.example.ticketingapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
+import android.content.SharedPreferences;
 
 import com.example.ticketingapp.models.LoginRequest;
 import com.example.ticketingapp.models.Traveler;
@@ -27,6 +30,8 @@ public class LoginActivity extends AppCompatActivity {
     private Button loginButton;
     private ApiService apiService;
 
+    private TextView registerTextView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +43,7 @@ public class LoginActivity extends AppCompatActivity {
         emailEditText = findViewById(R.id.emailLogin);
         passwordEditText = findViewById(R.id.emailPassword);
         loginButton = findViewById(R.id.loginButton);
+        registerTextView = findViewById(R.id.registerTextView);
 
         // Initialize Retrofit
         Retrofit retrofit = new Retrofit.Builder()
@@ -60,30 +66,35 @@ public class LoginActivity extends AppCompatActivity {
                 LoginRequest loginRequest = new LoginRequest(mail, password);
 
                 // Make the API call with the LoginRequest object as the request body
-                Call<List<Traveler>> call = apiService.loginTraveler(loginRequest);
-                call.enqueue(new Callback<List<Traveler>>() {
+                Call<List<LoginResponse>> call = apiService.loginTraveler(loginRequest);
+                call.enqueue(new Callback<List<LoginResponse>>() {
                     @Override
-                    public void onResponse(Call<List<Traveler>> call, Response<List<Traveler>> response) {
+                    public void onResponse(Call<List<LoginResponse>> call, Response<List<LoginResponse>> response) {
                         // Handle the API response
                         Log.d("Response Code", String.valueOf(response.code()));
                         Log.d("Response Message", response.message());
+
                         if (response.isSuccessful()) {
-                            List<Traveler> travelers = response.body();
-                            if (travelers != null && !travelers.isEmpty()) {
-                                Traveler traveler = travelers.get(0);
-                                String nic = traveler.getNic();
+                            List<LoginResponse> travelers = response.body();
+                            LoginResponse traveler = travelers.get(0);
+                            Boolean status = traveler.getIsActive();
+                            if (travelers != null && !travelers.isEmpty() && status == true) {
+                                LoginResponse logTraveler = travelers.get(0);
+                                String nic = logTraveler.getNic();
 
-                                // Log the traveler object
+                                // Add the code to save the nic
+                                // Save the "nic" value to SharedPreferences
+                                SharedPreferences sharedPreferences = getSharedPreferences("UserPreferences", Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor = sharedPreferences.edit();
+                                editor.remove("nic"); // Remove the "nic" value
+                                editor.apply();
 
-                                Log.d("Traveler Data", "Name: " + traveler.getName());
-                                Log.d("Traveler Data", "NIC: " + traveler.getNic());
-                                Log.d("Traveler Data", "Mail: " + traveler.getEmail());
-                                Log.d("Traveler Data", "Phone Number: " + traveler.getPhone());
+                                editor.putString("nic", nic); // Replace "newNicValue" with the new "nic" value
+                                editor.apply();
 
-//                                Log.d("NIC", "NIC value: " + nic);
                                 showToast("Login successful!");
                                 // Pass user data to the main activity or save it in shared preferences
-                                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                                Intent intent = new Intent(LoginActivity.this, ReservationCreateActivity.class);
                                 startActivity(intent);
                             } else {
                                 // Handle the case where the response is successful but the list is empty
@@ -96,11 +107,21 @@ public class LoginActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onFailure(Call<List<Traveler>> call, Throwable t) {
+                    public void onFailure(Call<List<LoginResponse>> call, Throwable t) {
                         // Handle the case where the API call failed
                         showToast("Login failed due to an error. Please try again later.");
                     }
                 });
+            }
+        });
+
+        // Set a click listener for the registration TextView
+        registerTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Add code to navigate to the registration screen here
+                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class); // Change to your actual registration activity
+                startActivity(intent);
             }
         });
     }

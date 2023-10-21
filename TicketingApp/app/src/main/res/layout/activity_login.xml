@@ -73,6 +73,18 @@
                 android:layout_marginTop="16dp"
                 style="@style/CustomButtonStyle"/>
 
+            <TextView
+                android:id="@+id/registerTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:text="Click Here To Register!"
+                android:layout_below="@id/loginButton"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="16dp"
+                android:textColor="@color/green"
+                android:clickable="true"
+                android:onClick="navigateToRegistration" />
+
         </LinearLayout>
 
     </RelativeLayout>
