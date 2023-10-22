@@ -9,8 +9,6 @@ public class LoginRequest {
         this.password = password;
     }
 
-    // Getters and setters (or use Lombok for auto-generating them)
-
     public String getEmail() {
         return mail;
     }

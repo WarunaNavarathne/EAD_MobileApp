@@ -2,12 +2,15 @@ package com.example.ticketingapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 
 import com.example.ticketingapp.models.Traveler;
 
@@ -85,9 +88,7 @@ public class RegisterActivity extends AppCompatActivity {
                         Log.d("Response Message", response.message());
                         if (response.isSuccessful()) {
                             // Registration successful
-                            showToast("Registration is complete!");
-                            Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
-                            startActivity(intent);
+                            showRegistrationSuccessDialog();
                         } else {
                             // Registration failed
                             showToast("Registration is Failed!");
@@ -102,6 +103,22 @@ public class RegisterActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    // Helper method to show the registration success dialog
+    private void showRegistrationSuccessDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Registration Successful");
+        builder.setMessage("Your account has been created successfully, it will be activated shortly. " +
+                "Login once the account has been activated.");
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                // Navigate to LoginActivity
+                Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                startActivity(intent);
+            }
+        });
+        builder.show();
     }
 
 }
